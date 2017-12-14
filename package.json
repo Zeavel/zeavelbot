@@ -1,0 +1,13 @@
+{
+   "name": "Test",
+   "description": "Test",
+   "version": "0.0.0",
+   "main": "zeavelbot.js",
+   "script":{
+   "start": "node zeavelbot.js"
+   },
+   "dependencies":{
+   "discord.js": "11.1.0",
+   "request": "2.01.0"
+   }
+}
