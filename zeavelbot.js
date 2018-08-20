@@ -48,7 +48,7 @@ if(server.channels.get(ids[i]).members === undefined)
             var cheli = server.channels.get(ids[i]).members.map(h => h.id)
         for(k=0;k<parseInt(kolvo); k++)
         {
-            console.log(cheli[k])
+            
             if(!server.members.map(h => h.id).includes(cheli[k]))
             {
                 g = 5
