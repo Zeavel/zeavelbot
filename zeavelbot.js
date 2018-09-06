@@ -59,7 +59,7 @@ client.on('message', message => {
            color = "#FF0000"
        }
         const Discord = require('discord.js')
-        const embed = new Discord.MessageEmbed()
+        const embed = new Discord.RichEmbed()
         .setTitle(name)
         .setImage(mapimg2)
         .addField("Players", "**"+playerss+"**")
@@ -91,7 +91,7 @@ client.on('message', message => {
       if(count === "")
       {
         const Discord = require('discord.js')
-        const embed = new Discord.MessageEmbed()
+        const embed = new Discord.RichEmbed()
         .setTitle("0 players online")
         .setColor("#FF0000")
   .setThumbnail("https://cdn.discordapp.com/attachments/486990358455123978/487204547123740682/image0.jpg")
@@ -100,7 +100,7 @@ client.on('message', message => {
       else
       {
         const Discord = require('discord.js')
-        const embed = new Discord.MessageEmbed()
+        const embed = new Discord.RichEmbed()
         .setTitle(count)
         .setDescription("**"+ players+"**")
         .setColor("#00FF00")
