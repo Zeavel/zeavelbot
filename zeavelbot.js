@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const CC = require('./command_create.js');
 const Command = CC.Command;
-const token = require("./token.json")
+
 
 
 var Commandss = new CC.Commands();
