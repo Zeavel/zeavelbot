@@ -3,7 +3,7 @@ const client = new Discord.Client();
 const CC = require('./command_create.js');
 const Command = CC.Command;
 const token = require("./token.json")
-const idserver = require("./idserver.json")
+
 
 var Commandss = new CC.Commands();
 var fs = require("fs");
@@ -27,88 +27,94 @@ function hasRole(mem, role)
         return false;
     }
 }
-client.setInterval(function play()
-{
-    var server = client.guilds.get(idserver.idserver)
-    var ids = server.channels.filter(h => h.type === "voice").map(h => h.id)
-       var sizes = server.channels.filter(h => h.type === "voice").size
-       var names = server.channels.filter(h => h.type === "voice").map(h => h.name)
-       var i;
-       var g;
-      
-    for(i=0; i<parseInt(sizes);i++)
-    {
-if(server.channels.get(ids[i]).members === undefined)
-{
-    i = i++
-}
+
+
+client.on('message', message => {
+   if(commandIs("info", message))
+   { 
+    
+    var cheerio = require('cheerio');
+    var request = require('request');
+  var urle = "https://squad-servers.com/server/7124/"
+    request(urle, function (error, response, body) {
+      if (!error) {
+          
+        var $ = cheerio.load(body)
+        var name = $("body > div.content > div > div:nth-child(3) > div > h1").text()
+        var status = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-7 > table > tbody > tr:nth-child(3) > td:nth-child(2) > button").text()
+        var playerss = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-7 > table > tbody > tr:nth-child(4) > td:nth-child(2) > strong").text().trim()
+        var map = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-7 > table > tbody > tr:nth-child(8) > td:nth-child(2) > strong").text()
+        var regsin = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-7 > table > tbody > tr:nth-child(9) > td:nth-child(2)").text()
+        var mapimg = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-5 > div:nth-child(3) > img").attr("src").replace(/[']/g, "%27").replace(/[ ]/g,"%20")
+        var mapimg2= "https://squad-servers.com"+mapimg  
+       
+        var location = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-7 > table > tbody > tr:nth-child(5) > td:nth-child(2) > a").text()
+       var color;
+       if(status === "Online")
+       {
+           color = "#00FF00"
+       }
        else
        {
-        var kolvo = server.channels.get(ids[i]).members.size
-            var cheli = server.channels.get(ids[i]).members.map(h => h.id)
-        for(k=0;k<parseInt(kolvo); k++)
-        {
-            
-            if(!server.members.map(h => h.id).includes(cheli[k]))
-            {
-                g = 5
-            }
-            else
-            { 
-                if(server.members.get(cheli[k]).roles.map(h => h.name).toString().includes(names[i].toLowerCase()))
-                {
-                   
-                }
-                else
-                {
-                    for(m=0; m<parseInt(sizes); m++)
-                    {
-                        var foundRol = server.roles.filter(r=>r.name.toLowerCase().includes(names[m].toLowerCase())).first()
-                        server.members.get(cheli[k]).removeRole(foundRol.id)
-                    }
-                 var foundRole = server.roles.filter(r=>r.name.toLowerCase().includes(names[i].toLowerCase())).first()
-
-                   server.members.get(cheli[k]).addRole(foundRole.id)
-                }
-                 }
-        }
-     }
-    }
-}, 3000)
-client.on('message', message => {
-   if(commandIs("test", message))
+           color = "#FF0000"
+       }
+        const Discord = require('discord.js')
+        const embed = new Discord.MessageEmbed()
+        .setTitle(name)
+        .setImage(mapimg2)
+        .addField("Players", "**"+playerss+"**")
+        .addField("Status", "**"+status+"**")
+        .addField("Location", "**"+location+"**")
+        .addField("Map", "**"+map+"**")
+        .addField("Registered since", "**"+regsin+"**")
+        .setColor(color)
+        .setThumbnail("https://cdn.discordapp.com/attachments/486990358455123978/487204547123740682/image0.jpg")
+        message.channel.send({embed})
+    
+    
+    
+    
+  
+    }})
+   }
+   if(commandIs("players", message))
    {
-       message.channel.send("d")
+    var cheerio = require('cheerio');
+    var request = require('request');
+  var urle = "https://squad-servers.com/server/7124/"
+  request(urle, function (error, response, body) {
+    if (!error) {
+        
+      var $ = cheerio.load(body)
+      var count = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(5) > div > h3").text()
+      var players = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(6) > div > div").text().replace(/[,]/g,"\n")
+      if(count === "")
+      {
+        const Discord = require('discord.js')
+        const embed = new Discord.MessageEmbed()
+        .setTitle("0 players online")
+        .setColor("#FF0000")
+  .setThumbnail("https://cdn.discordapp.com/attachments/486990358455123978/487204547123740682/image0.jpg")
+        message.channel.send({embed})
+      }
+      else
+      {
+        const Discord = require('discord.js')
+        const embed = new Discord.MessageEmbed()
+        .setTitle(count)
+        .setDescription("**"+ players+"**")
+        .setColor("#00FF00")
+        .setThumbnail("https://cdn.discordapp.com/attachments/486990358455123978/487204547123740682/image0.jpg")
+        message.channel.send({embed})
+      }
+      console.log("d"+count+"d")
+   
+     
+    }})
    }
   });
-client.on("guildMemberAdd", member =>
-{
-  let guild = member.guild;
-  if (guild.channels.filter(c => c.name.includes("чат")).first() !== undefined)
-  {
-    var monthc = (new Date( member.user.createdAt).getMonth() + 1);
-    var dayc = new Date( member.user.createdAt).getDate();
-    var yearc = new Date( member.user.createdAt).getFullYear();
-    var hoursc = new Date( member.user.createdAt).getHours();
-    var minutesc = new Date( member.user.createdAt).getMinutes();
-    var secondsc = new Date( member.user.createdAt).getSeconds();
-    if (hoursc < 10) {hoursc = "0"+hoursc}
-    if (minutesc < 10) {minutesc = "0"+minutesc}
-    if (secondsc < 10) {secondsc = "0"+secondsc}
-    if (monthc < 10) {monthc = "0"+monthc}
-    if (dayc < 10) {dayc = "0"+dayc}
-    const Discord = require('discord.js')
-    const embed = new Discord.RichEmbed()
-.setAuthor('Новый участник - ' + member.user.username)
-.addField("Имя пользователя", "**"+member.user.tag+"**")
-.addField("Дата регистрации",'**'+ yearc+"."+monthc+"."+dayc+ " " + hoursc+":"+minutesc+"**")
-.setThumbnail(member.user.displayAvatarURL)
-.setImage("https://cdn.discordapp.com/attachments/381810646011871232/479650305777205251/-3.png")
-guild.channels.filter(c => c.name.includes("чат")).first().send({embed});
-  }
-})
+
 client.login(token.token);
 
 
 
-  
