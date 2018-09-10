@@ -27,92 +27,56 @@ function hasRole(mem, role)
         return false;
     }
 }
+var vole = 1;
 
-
-client.on('message', message => {
-   if(commandIs("info", message))
-   { 
-    
-    var cheerio = require('cheerio');
-    var request = require('request');
-  var urle = "https://squad-servers.com/server/7124/"
-    request(urle, function (error, response, body) {
-      if (!error) {
-          
-        var $ = cheerio.load(body)
-        var name = $("body > div.content > div > div:nth-child(3) > div > h1").text()
-        var status = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-7 > table > tbody > tr:nth-child(3) > td:nth-child(2) > button").text()
-        var playerss = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-7 > table > tbody > tr:nth-child(4) > td:nth-child(2) > strong").text().trim()
-        var map = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-7 > table > tbody > tr:nth-child(8) > td:nth-child(2) > strong").text()
-        var regsin = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-7 > table > tbody > tr:nth-child(9) > td:nth-child(2)").text()
-        var mapimg = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-5 > div:nth-child(3) > img").attr("src").replace(/[']/g, "%27").replace(/[ ]/g,"%20")
-        var mapimg2= "https://squad-servers.com"+mapimg  
-       
-        var location = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-7 > table > tbody > tr:nth-child(5) > td:nth-child(2) > a").text()
-       var color;
-       if(status === "Online")
-       {
-           color = "#00FF00"
-       }
-       else
-       {
-           color = "#FF0000"
-       }
-        const Discord = require('discord.js')
-        const embed = new Discord.RichEmbed()
-        .setTitle(name)
-        .setImage(mapimg2)
-        .addField("Players", "**"+playerss+"**")
-        .addField("Status", "**"+status+"**")
-        .addField("Location", "**"+location+"**")
-        .addField("Map", "**"+map+"**")
-        .addField("Registered since", "**"+regsin+"**")
-        .setColor(color)
-        .setThumbnail("https://cdn.discordapp.com/attachments/486990358455123978/487204547123740682/image0.jpg")
-        message.channel.send({embed})
-    
-    
-    
-    
-  
-    }})
-   }
-   if(commandIs("players", message))
-   {
-    var cheerio = require('cheerio');
-    var request = require('request');
-  var urle = "https://squad-servers.com/server/7124/"
-  request(urle, function (error, response, body) {
-    if (!error) {
+client.setInterval(function play()
+{
+    var server = client.guilds.get("351491707554103296")
+    var channel;
+    if(client.guilds.get("351491707554103296").channels != undefined)
+    {
+       channel = client.guilds.get("351491707554103296").channels.get("488281152868843520")
+        if(channel.members.size > 0 && !channel.members.map(h=>h.id).includes("399601970685673473"))
+        {
+            client.voice.joinChannel(client.guilds.get("351491707554103296").channels.get("488281152868843520"))
+            .then(connection => {
         
-      var $ = cheerio.load(body)
-      var count = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(5) > div > h3").text()
-      var players = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(6) > div > div").text().replace(/[,]/g,"\n")
-      if(count === "")
-      {
-        const Discord = require('discord.js')
-        const embed = new Discord.RichEmbed()
-        .setTitle("0 players online")
-        .setColor("#FF0000")
-  .setThumbnail("https://cdn.discordapp.com/attachments/486990358455123978/487204547123740682/image0.jpg")
-        message.channel.send({embed})
-      }
-      else
-      {
-        const Discord = require('discord.js')
-        const embed = new Discord.RichEmbed()
-        .setTitle(count)
-        .setDescription("**"+ players+"**")
-        .setColor("#00FF00")
-        .setThumbnail("https://cdn.discordapp.com/attachments/486990358455123978/487204547123740682/image0.jpg")
-        message.channel.send({embed})
-      }
-      console.log("d"+count+"d")
+             dispatcher =  connection.playArbitraryInput('http://wargaming.fm/1');
+                 dispatcher.on("start", dw => {
+
+                 })
+              dispatcher.setVolume(vole)
+                })
+                .catch(console.log);
+        }
+        if(channel.members.size == 1 && channel.members.map(h=>h.id).includes("399601970685673473"))
+        {
+           client.guilds.get("351491707554103296").channels.get("488281152868843520").leave()
+        }
+      
+    }
+    
+}, 3000)
+client.on('message', message => {
+    if(commandIs("vol", message))
+    {
+        var volme = parseInt(message.content.substring(5))
+        console.log(volme)
+        var volume;
+        if(volme>0 && volme <=200)
+        {
+            volume = volme/100
+            client.voiceConnections.map(g=>g.dispatcher.setVolume(volume))
+
+        }
+       
+        
+//
+    }
    
-     
-    }})
-   }
   });
+
+
 
 client.login(process.env.BOT_TOKEN);
 
