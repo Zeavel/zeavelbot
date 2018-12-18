@@ -102,7 +102,7 @@ client.on('message', message => {
         .setColor(color)
         .setFooter(players)
         message.channel.send({embed})
-    
+    console.log("test")
     
     
     
