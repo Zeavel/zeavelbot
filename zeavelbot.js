@@ -27,10 +27,39 @@ function hasRole(mem, role)
         return false;
     }
 }
-
+client.on("ready", r=>{
+    function sec() {
+       
+        
+        var cheerio = require('cheerio');
+        var request = require('request');
+      var urle = "https://squad-servers.com/server/7124/"
+        request(urle, function (error, response, body) {
+          if (!error) {
+              var $ = cheerio.load(body)
+              var status = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-7 > table > tbody > tr:nth-child(3) > td:nth-child(2) > button").text()
+              var players = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-7 > table > tbody > tr:nth-child(4) > td:nth-child(2) > strong").text().trim()
+              if(status == "Online")
+              {
+                  client.user.setActivity(players + " players", { type: "PLAYING"})
+                 /* client.user.setPresence({ game: { name: players }, status: 'online' })
+                  .then(console.log)
+                  .catch(console.error);*/
+              }
+              if(status == "Offline")
+              {
+                client.user.setPresence({status: 'dnd', activity: {name: "Offline"}})
+                
+              }
+        }})
+        }
+        
+        setInterval(sec, 5000)
+   
+})
 
 client.on('message', message => {
-   if(commandIs("info", message))
+   if(commandIs("info+", message))
    { 
     
     var cheerio = require('cheerio');
@@ -41,13 +70,13 @@ client.on('message', message => {
           
         var $ = cheerio.load(body)
         var name = $("body > div.content > div > div:nth-child(3) > div > h1").text()
-        var status = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-7 > table > tbody > tr:nth-child(3) > td:nth-child(2) > button").text()
+        var status = $("body > div.content > div > div:nth-child(3) > div > div.row > div.col-12.col-md-7 > table > tbody > tr:nth-child(3) > td:nth-child(2) > button").text()
         var playerss = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-7 > table > tbody > tr:nth-child(4) > td:nth-child(2) > strong").text().trim()
         var map = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-7 > table > tbody > tr:nth-child(8) > td:nth-child(2) > strong").text()
         var regsin = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-7 > table > tbody > tr:nth-child(9) > td:nth-child(2)").text()
         var mapimg = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-5 > div:nth-child(3) > img").attr("src").replace(/[']/g, "%27").replace(/[ ]/g,"%20")
         var mapimg2= "https://squad-servers.com"+mapimg  
-       
+        var players = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(6) > div > div").text().replace(/[,]/g,"\n")
         var location = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(4) > div.col-12.col-md-7 > table > tbody > tr:nth-child(5) > td:nth-child(2) > a").text()
        var color;
        if(status === "Online")
@@ -58,17 +87,20 @@ client.on('message', message => {
        {
            color = "#FF0000"
        }
+
         const Discord = require('discord.js')
-        const embed = new Discord.RichEmbed()
+        const embed = new Discord.MessageEmbed()
+        .setThumbnail("https://cdn.discordapp.com/attachments/486990358455123978/523920686570405898/2_2.png")
         .setTitle(name)
         .setImage(mapimg2)
+        
         .addField("Players", "**"+playerss+"**")
         .addField("Status", "**"+status+"**")
         .addField("Location", "**"+location+"**")
         .addField("Map", "**"+map+"**")
         .addField("Registered since", "**"+regsin+"**")
         .setColor(color)
-        .setThumbnail("https://cdn.discordapp.com/attachments/486990358455123978/487204547123740682/image0.jpg")
+        .setFooter(players)
         message.channel.send({embed})
     
     
@@ -77,41 +109,7 @@ client.on('message', message => {
   
     }})
    }
-   if(commandIs("players", message))
-   {
-    var cheerio = require('cheerio');
-    var request = require('request');
-  var urle = "https://squad-servers.com/server/7124/"
-  request(urle, function (error, response, body) {
-    if (!error) {
-        
-      var $ = cheerio.load(body)
-      var count = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(5) > div > h3").text()
-      var players = $("body > div.content > div > div:nth-child(3) > div > div:nth-child(6) > div > div").text().replace(/[,]/g,"\n")
-      if(count === "")
-      {
-        const Discord = require('discord.js')
-        const embed = new Discord.RichEmbed()
-        .setTitle("0 players online")
-        .setColor("#FF0000")
-  .setThumbnail("https://cdn.discordapp.com/attachments/486990358455123978/487204547123740682/image0.jpg")
-        message.channel.send({embed})
-      }
-      else
-      {
-        const Discord = require('discord.js')
-        const embed = new Discord.RichEmbed()
-        .setTitle(count)
-        .setDescription("**"+ players+"**")
-        .setColor("#00FF00")
-        .setThumbnail("https://cdn.discordapp.com/attachments/486990358455123978/487204547123740682/image0.jpg")
-        message.channel.send({embed})
-      }
-      console.log("d"+count+"d")
-   
-     
-    }})
-   }
+  
   });
 
 client.login(process.env.BOT_TOKEN);
